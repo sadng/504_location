@@ -16,7 +16,14 @@ var dark = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?
     zoomOffset: -1,
 });
 
-var map = L.map('map', {layers:[light]}).fitWorld();
+var map = L.map('map', {layers:[light, dark]}).fitWorld();
+
+var baseMaps = {
+    "Light" : light,
+    "Dark" : dark
+};
+
+var layerControl = L.control.layers(baseMaps).addTo(map);
 
 function onLocationFound(e) {
     var radius = e.accuracy; //this defines a variable radius as the accuracy value returned by the locate method. The unit is meters.
@@ -32,10 +39,10 @@ function onLocationFound(e) {
     }
 
     var times = SunCalc.getTimes(new Date(), e.latitude, e.longitude);
-    var sunrise = times.sunrise.getHours();
-    var sunset = times.sunset.getHours();
+    var sunrise = times.sunrise.getHours() + times.sunrise.getMinutes();
+    var sunset = times.sunset.getHours() + time.sunset.getMinutes();
         
-    var currentTime = new Date().getHours();
+    var currentTime = new Date().getHours() + newDate().getMinutes();
         if (sunrise < currentTime && currentTime < sunset){
             map.removeLayer(dark);
             map.addLayer(light);
@@ -54,4 +61,14 @@ function onLocationError(e) {
   
 map.on('locationerror', onLocationError);  
 
-map.locate({setView: true, maxZoom: 16});
+document.getElementById("lp").addEventListener("click", mylp);
+
+function mylp() {
+    map.locate({setView: true, maxZoom: 16});
+}
+
+var directions = [
+	"To get started, please allow your device to share its location, allowing for the map to access your current location information. Your device location information will not be stored or shared with any outside resources. Please understand that in order for this map to function accordingly, your location information is necessary.\nAccess and accept your location permissions by clicking the Location Permissions button at the top of your page. Thank you."
+	];
+	window.alert(directions);
+	document.getElementById("demo").innerHTML = directions;
